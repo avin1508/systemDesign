@@ -1,0 +1,54 @@
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+
+    container_name: notification-api
+
+    ports:
+      - "5000:5000"
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+    env_file:
+      - .env
+
+    depends_on:
+      - redis
+      - mongo
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+    env_file:
+      - .env
+
+    depends_on:
+      - redis
+      - mongo
+
+  redis:
+    image: "redis:7"
+
+    container_name: notification-redis
+
+    ports:
+      - "6379:6379"
+
+  mongo:
+    image: mongo:7
+
+    container_name: notification-mongo
+
+    ports:
+      - "27018:27017"

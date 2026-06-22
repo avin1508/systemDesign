@@ -1,0 +1,73 @@
+# docker-compose.yml
+
+services:
+
+  app1:
+    build: ./app
+    container_name: app1
+    env_file:
+      - ./app/.env
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+      - mongodb
+
+  app2:
+    build: ./app
+    container_name: app2
+    env_file:
+      - ./app/.env
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+      - mongodb
+
+  app3:
+    build: ./app
+    container_name: app3
+    env_file:
+      - ./app/.env
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+      - mongodb
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app1
+      - app2
+      - app3
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./.env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
