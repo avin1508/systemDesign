@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Realtime Demo</title>
+</head>
+<body>
+
+<h1>Realtime Demo</h1>
+
+<button id="btn">
+    Make Order Ready
+</button>
+
+<div id="messages"></div>
+
+<script src="http://localhost/socket.io/socket.io.js"></script>
+
+<script>
+    const socket = io("http://localhost");
+
+    socket.on("connect", () => {
+        console.log("Connected :", socket.id);
+    });
+
+    socket.on("order-ready", (data) => {
+
+        console.log(data);
+
+        document.getElementById("messages").innerHTML += `
+            <p>
+                Order : ${data.orderId}
+                Server Event Received
+            </p>
+        `;
+    });
+
+    document.getElementById("btn")
+        .addEventListener("click", async () => {
+
+            await fetch("http://localhost/api/orders/101/ready", {
+                method: "PUT"
+            });
+
+        });
+
+</script>
+
+</body>
+</html>

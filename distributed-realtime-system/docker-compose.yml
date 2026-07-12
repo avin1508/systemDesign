@@ -1,0 +1,79 @@
+services:
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - node-1
+      - node-2
+      - node-3
+    networks:
+      - realtime-network
+
+  node-1:
+    build:
+      context: ./app
+    container_name: node-1
+    hostname: node-1
+    env_file:
+      - .env
+    environment:
+      SERVER_NAME: node-1
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+    networks:
+      - realtime-network
+
+  node-2:
+    build:
+      context: ./app
+    container_name: node-2
+    hostname: node-2
+    env_file:
+      - .env
+    environment:
+      SERVER_NAME: node-2
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+    networks:
+      - realtime-network
+
+  node-3:
+    build:
+      context: ./app
+    container_name: node-3
+    hostname: node-3
+    env_file:
+      - .env
+    environment:
+      SERVER_NAME: node-3
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+    networks:
+      - realtime-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    hostname: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - realtime-network
+
+networks:
+  realtime-network:
+    driver: bridge

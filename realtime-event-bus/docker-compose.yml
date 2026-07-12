@@ -1,0 +1,31 @@
+services:
+  app:
+    build: ./app
+    container_name: event-bus-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    networks:
+      - event-bus-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: event-bus-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - event-bus-network
+
+networks:
+  event-bus-network:
+    driver: bridge
