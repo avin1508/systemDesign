@@ -10,4 +10,7 @@ export const CHANNELS = Object.freeze({
 
     PAYMENT_SUCCESS: "payment.success",
     PAYMENT_FAILED: "payment.failed",
+
+    NOTIFICATION_EMAIL: "notification.email",
+    NOTIFICATION_SMS: "notification.sms",
 });

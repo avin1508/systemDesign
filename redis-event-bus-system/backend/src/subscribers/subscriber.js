@@ -1,34 +1,41 @@
 import redisClient from "../config/redis.js";
 
-export const subscribe = async ({
-    channel,
+export const patternSubscribe = async ({
+    pattern,
     handler,
 }) => {
     try {
 
-        await redisClient.subscribe(channel, async (message) => {
+        await redisClient.pSubscribe(
+            pattern,
+            async (message, channel) => {
 
-            const event = JSON.parse(message);
+                const event = JSON.parse(message);
 
-            console.log(`
+                console.log(`
 ========================================
-📥 Event Received
+📥 Pattern Event Received
 ----------------------------------------
+Pattern    : ${pattern}
 Channel    : ${channel}
 Event Type : ${event.eventType}
 Event ID   : ${event.eventId}
 ========================================
 `);
 
-            await handler(event);
+                await handler({
+                    channel,
+                    event,
+                });
 
-        });
+            }
+        );
 
-        console.log(`[Subscriber] Listening on ${channel}`);
+        console.log(`[Pattern Subscriber] Listening on ${pattern}`);
 
     } catch (error) {
 
-        console.error("[Subscriber Error]", error);
+        console.error("[Pattern Subscriber Error]", error);
 
         throw error;
     }
