@@ -1,7 +1,11 @@
+import crypto from "crypto";
+
 import {
     publishEmailNotification,
     publishSMSNotification,
 } from "../../publishers/notification.publisher.js";
+
+import { getIo } from "../../config/socket.js";
 
 export const orderCreatedHandler = async (event) => {
 
@@ -10,6 +14,18 @@ export const orderCreatedHandler = async (event) => {
 🟢 ORDER CREATED
 ----------------------------------------
 `, event);
+
+    const io = getIo();
+
+    console.log(
+        `[${process.env.SERVER_NAME}] Broadcasting order.created`
+    );
+
+    // Emit real-time event to all connected clients
+    io.emit("order.created", {
+        server: process.env.SERVER_NAME,
+        ...event.data,
+    });
 
     const order = event.data;
 
@@ -33,4 +49,3 @@ export const orderCreatedHandler = async (event) => {
     });
 
 };
-
