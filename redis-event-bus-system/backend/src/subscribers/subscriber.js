@@ -1,4 +1,4 @@
-import redisClient from "../config/redis.js";
+import { createSubscriberClient } from "../config/redis.js";
 
 export const patternSubscribe = async ({
     pattern,
@@ -6,11 +6,21 @@ export const patternSubscribe = async ({
 }) => {
     try {
 
-        await redisClient.pSubscribe(
+        const subscriberClient = createSubscriberClient();
+
+        await subscriberClient.connect();
+
+        await subscriberClient.pSubscribe(
             pattern,
             async (message, channel) => {
 
-                const event = JSON.parse(message);
+                // Skip non-JSON messages (e.g. Socket.IO adapter binary protocol)
+                let event;
+                try {
+                    event = JSON.parse(message);
+                } catch {
+                    return;
+                }
 
                 console.log(`
 ========================================

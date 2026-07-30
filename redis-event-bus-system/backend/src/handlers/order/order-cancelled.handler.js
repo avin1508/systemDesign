@@ -1,3 +1,5 @@
+import { getIo } from "../../config/socket.js";
+
 export const orderCancelledHandler = async (event) => {
 
     console.log(`
@@ -5,5 +7,12 @@ export const orderCancelledHandler = async (event) => {
 🔴 ORDER CANCELLED
 ----------------------------------------
 `, event);
+
+    const io = getIo();
+
+    io.emit("order.cancelled", {
+        server: process.env.SERVER_NAME,
+        ...event.data,
+    });
 
 };
